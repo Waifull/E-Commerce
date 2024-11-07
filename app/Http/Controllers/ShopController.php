@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -13,6 +15,8 @@ class ShopController extends Controller
         $order_column = "";
         $order_order = "";
         $order = $request->query('order') ? $request->query('order') : -1;
+        $filter_brands = $request->query('brands');
+        $filter_categories = $request->query('categories');
         switch($order)
         {
             case 1:
@@ -43,8 +47,16 @@ class ShopController extends Controller
                 $order_column = "id";
                 $order_order = "DESC";
         }
-        $products = Product::orderBy($order_column, $order_order)->paginate($size);
-        return view('shop', compact('products', 'size', 'order'));
+        $brands = Brand::orderBy('name', 'ASC')->get();
+        $categories = Category::orderBy('name', 'ASC')->get();
+        $products = Product::where(function($query) use($filter_brands){
+            $query->whereIn('brand_id', explode(',', $filter_brands))->orWhereRaw("'".$filter_brands."'=''");
+        })
+        ->where(function($query) use($filter_categories){
+            $query->whereIn('category_id', explode(',', $filter_categories))->orWhereRaw("'".$filter_categories."'=''");
+        })
+        ->orderBy($order_column, $order_order)->paginate($size);
+        return view('shop', compact('products', 'size', 'order', 'brands', 'categories', 'filter_brands', 'filter_categories'));
     }
 
     public function product_details($product_slug)
