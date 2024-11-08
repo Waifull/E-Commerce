@@ -17,6 +17,9 @@ class ShopController extends Controller
         $order = $request->query('order') ? $request->query('order') : -1;
         $filter_brands = $request->query('brands');
         $filter_categories = $request->query('categories');
+        $min_price = $request->query('min') ? $request->query('min') : 1;
+        $max_price = $request->query('max') ? $request->query('max') : 1000;
+
         switch($order)
         {
             case 1:
@@ -55,8 +58,12 @@ class ShopController extends Controller
         ->where(function($query) use($filter_categories){
             $query->whereIn('category_id', explode(',', $filter_categories))->orWhereRaw("'".$filter_categories."'=''");
         })
+        ->where(function($query) use($min_price, $max_price){
+            $query->whereBetween('regular_price', [$min_price, $max_price])
+            ->orWhereBetween('sale_price', [$min_price, $max_price]);
+        })
         ->orderBy($order_column, $order_order)->paginate($size);
-        return view('shop', compact('products', 'size', 'order', 'brands', 'categories', 'filter_brands', 'filter_categories'));
+        return view('shop', compact('products', 'size', 'order', 'brands', 'categories', 'filter_brands', 'filter_categories', 'min_price', 'max_price'));
     }
 
     public function product_details($product_slug)
