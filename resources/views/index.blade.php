@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+
+  .category-image {
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the entire area */
+    
+  }
+</style>
 <main>
 
     <section class="swiper-container js-swiper-slider swiper-number-pagination slideshow" data-settings='{
@@ -92,7 +100,7 @@
             <div class="swiper-wrapper">
               @foreach ($categories as $category)
               <div class="swiper-slide">
-                <img loading="lazy" class="w-100 h-auto mb-3"  src=" {{asset('uploads/categories')}}/{{ $category->image }}" width="124"
+                <img loading="lazy" class="w-100 h-auto mb-3 category-image"  src=" {{asset('uploads/categories')}}/{{ $category->image }}" width="124"
                   height="124" alt="" />
                 <div class="text-center">
                   <a href="{{ route('shop.index',['categories'=>$category->id]) }}" class="menu-link fw-medium">{{ $category->name }}</a>
@@ -239,7 +247,7 @@
           <div class="col-md-6">
             <div class="category-banner__item border-radius-10 mb-5">
               <img loading="lazy" class="h-auto"  src=" {{asset('assets/images/home/demo3/category_10.jpg')}}" width="690" height="665"
-                alt="" />')}}
+                alt="" />
               <div class="category-banner__item-mark">
                 Starting at $19
               </div>
